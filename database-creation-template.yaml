@@ -1,0 +1,38 @@
+Parameters:
+  DBMasterUsername:
+    Type: String
+    Description: Master username for the RDS instance
+    NoEcho: true
+    Default: tunderahman
+
+  DBMasterUserPassword:
+    Type: String
+    Description: Master password for the RDS instance
+    NoEcho: true
+    MinLength: 8
+
+Resources:
+  DBInstance:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Snapshot
+    UpdateReplacePolicy: Snapshot
+    Properties:
+      DBInstanceClass: db.t3.micro
+      AllocatedStorage: 20
+      StorageType: gp3
+      DBName: airflow_pipeline_db
+      Engine: postgres
+      EngineVersion: '16.4'
+      MasterUsername: !Ref DBMasterUsername
+      MasterUserPassword: !Ref DBMasterUserPassword
+      Port: 5432
+      PubliclyAccessible: false
+
+Outputs:
+  DBEndpoint:
+    Description: Connection endpoint for the RDS instance
+    Value: !GetAtt DBInstance.Endpoint.Address
+
+  DBPort:
+    Description: Port for the RDS instance
+    Value: !GetAtt DBInstance.Endpoint.Port
